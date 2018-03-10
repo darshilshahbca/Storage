@@ -3,7 +3,9 @@ package com.example.x_men.storage;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -37,7 +39,15 @@ public class MainActivity extends AppCompatActivity {
 
         DataItemAdapter adapter = new DataItemAdapter(this, dataItemList);
 
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences (this);
+        boolean grid = settings.getBoolean (getString (R.string.pref_display_grid), false);
+
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rvItems);
+
+        if(grid){
+            recyclerView.setLayoutManager (new GridLayoutManager (this, 3));
+        }
+
         recyclerView.setAdapter(adapter);
     }
 
@@ -53,6 +63,11 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_signin:
                 Intent intent = new Intent(this, SigninActivity.class);
                 startActivityForResult(intent, SIGNIN_REQUEST);
+                return true;
+            case R.id.action_settings:
+                Intent settingIntent = new Intent(this, PrefsActivity.class);
+                startActivity (settingIntent);
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
