@@ -5,22 +5,27 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
 import com.example.x_men.storage.model.DataItem;
+import com.example.x_men.storage.sample.SampleDataProvider;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     @SuppressWarnings("FieldCanBeLocal")
     private TextView tvOut;
+    List<DataItem> dataItemList = SampleDataProvider.dataItemList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        DataItem item =
-                new DataItem (null, "My menu item", "a description", "a category", 1, 9.95, "apple_pie.jpg"   );
-
         tvOut = (TextView) findViewById(R.id.out);
-        tvOut.setText(item.toString ());
+        tvOut.setText("");
+
+        for (DataItem item : dataItemList){
+            tvOut.append (item.getItemName () + "\n");
+        }
 
     }
 }
