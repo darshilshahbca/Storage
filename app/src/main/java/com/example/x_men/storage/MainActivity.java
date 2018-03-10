@@ -10,7 +10,6 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.x_men.storage.model.DataItem;
@@ -80,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 return true;
             case R.id.action_import:
-                List<DataItem> dataItems = JSONHelper.importFromJSON (this);
+                List<DataItem> dataItems = JSONHelper.importFromResource (this);
                 if (dataItems != null) {
                     for(DataItem dataItem : dataItems){
                         Log.i(TAG, "onOptiomItemSelected: " + dataItem.getItemName ());
