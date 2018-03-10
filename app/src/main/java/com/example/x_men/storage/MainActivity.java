@@ -17,7 +17,6 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     @SuppressWarnings("FieldCanBeLocal")
-//    private TextView tvOut;
     List<DataItem> dataItemList = SampleDataProvider.dataItemList;
     List<String> itemNames = new ArrayList<> ();
 
@@ -25,16 +24,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-//        tvOut = (TextView) findViewById(R.id.out);
-//        tvOut.setText("");
-
-//        Collections.sort (dataItemList, new Comparator<DataItem> () {
-//            @Override
-//            public int compare(DataItem o1, DataItem o2) {
-//                return o1.getItemName ().compareTo (o2.getItemName ());
-//            }
-//        });
 
         for (DataItem item : dataItemList){
 //            tvOut.append (item.getItemName () + "\n");
@@ -48,9 +37,6 @@ public class MainActivity extends AppCompatActivity {
 
         ListView listView = findViewById (android.R.id.list);
         listView.setAdapter (adapter);
-
-
-
 
     }
 }
