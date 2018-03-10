@@ -7,6 +7,8 @@ import android.widget.TextView;
 import com.example.x_men.storage.model.DataItem;
 import com.example.x_men.storage.sample.SampleDataProvider;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -22,6 +24,13 @@ public class MainActivity extends AppCompatActivity {
 
         tvOut = (TextView) findViewById(R.id.out);
         tvOut.setText("");
+
+        Collections.sort (dataItemList, new Comparator<DataItem> () {
+            @Override
+            public int compare(DataItem o1, DataItem o2) {
+                return o1.getItemName ().compareTo (o2.getItemName ());
+            }
+        });
 
         for (DataItem item : dataItemList){
             tvOut.append (item.getItemName () + "\n");
