@@ -2,14 +2,12 @@ package com.example.x_men.storage;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.ArrayAdapter;
+import android.support.v7.widget.RecyclerView;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.example.x_men.storage.model.DataItem;
 import com.example.x_men.storage.sample.SampleDataProvider;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -33,8 +31,8 @@ public class MainActivity extends AppCompatActivity {
 
         DataItemAdapter adapter = new DataItemAdapter (this, dataItemList);
 
-        ListView listView = findViewById (android.R.id.list);
-        listView.setAdapter (adapter);
+        RecyclerView recyclerView = findViewById (R.id.rvItems);
+        recyclerView.setAdapter (adapter);
 
     }
 }
