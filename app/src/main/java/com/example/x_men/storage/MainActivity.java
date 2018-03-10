@@ -7,6 +7,7 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
@@ -14,6 +15,7 @@ import android.widget.Toast;
 
 import com.example.x_men.storage.model.DataItem;
 import com.example.x_men.storage.sample.SampleDataProvider;
+import com.example.x_men.storage.util.JSONHelper;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -23,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int SIGNIN_REQUEST = 1001;
     public static final String MY_GLOBAL_PREFS = "my_global_prefs";
+    private static final String TAG = "MainActivity";
     List<DataItem> dataItemList = SampleDataProvider.dataItemList;
 
     @Override
@@ -67,6 +70,23 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_settings:
                 Intent settingIntent = new Intent(this, PrefsActivity.class);
                 startActivity (settingIntent);
+                return true;
+            case R.id.action_export:
+                boolean result = JSONHelper.exportToJSON (this, dataItemList);
+                if (result){
+                    Toast.makeText (this, "Data Exported", Toast.LENGTH_SHORT).show();
+                } else{
+                    Toast.makeText (this, "Export Failed", Toast.LENGTH_SHORT).show();
+                }
+                return true;
+            case R.id.action_import:
+                List<DataItem> dataItems = JSONHelper.importFromJSON (this);
+                if (dataItems != null) {
+                    for(DataItem dataItem : dataItems){
+                        Log.i(TAG, "onOptiomItemSelected: " + dataItem.getItemName ());
+                    }
+                }
+
                 return true;
         }
         return super.onOptionsItemSelected(item);
