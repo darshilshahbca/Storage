@@ -18,22 +18,20 @@ public class MainActivity extends AppCompatActivity {
 
     @SuppressWarnings("FieldCanBeLocal")
     List<DataItem> dataItemList = SampleDataProvider.dataItemList;
-    List<String> itemNames = new ArrayList<> ();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        for (DataItem item : dataItemList){
-//            tvOut.append (item.getItemName () + "\n");
-            itemNames.add(item.getItemName ());
-        }
+        Collections.sort (dataItemList, new Comparator<DataItem> () {
+            @Override
+            public int compare(DataItem o1, DataItem o2) {
+                return o1.getItemName ().compareTo (o2.getItemName ());
+            }
+        });
 
-        Collections.sort (itemNames);
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<String> (
-            this, android.R.layout.simple_list_item_1, itemNames);
+        DataItemAdapter adapter = new DataItemAdapter (this, dataItemList);
 
         ListView listView = findViewById (android.R.id.list);
         listView.setAdapter (adapter);
