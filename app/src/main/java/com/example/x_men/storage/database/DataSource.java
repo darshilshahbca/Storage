@@ -48,13 +48,14 @@ public class DataSource {
 
     public void seedDatabase(List<DataItem> dataItemList) {
 
+
         try {
             mDatabase.beginTransaction ();
             for (DataItem item : dataItemList) {
                 try {
-                    if (item.getItemName ().equals ("House Salad")) {
-                        throw new Exception ("I don't like salad!");
-                    }
+//                    if (item.getItemName ().equals ("House Salad")) {
+//                        throw new Exception ("I don't like salad!");
+//                    }
                     createItem (item);
                 } catch (SQLiteException e) {
                     e.printStackTrace ();

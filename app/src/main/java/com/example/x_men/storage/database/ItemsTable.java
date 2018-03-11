@@ -11,6 +11,8 @@ public class ItemsTable {
     public static final String COLUMN_PRICE = "price";
     public static final String COLUMN_IMAGE = "image";
 
+
+
     public static final String[] ALL_COLUMNS =
             { COLUMN_ID,COLUMN_NAME,COLUMN_DESCRIPTION,COLUMN_CATEGORY,COLUMN_POSITION,COLUMN_PRICE,COLUMN_IMAGE };
 
