@@ -21,4 +21,11 @@
         android:id="@+id/action_export"
         android:title="@string/action_export"
         app:showAsAction="ifRoom" />
+
+    <item android:id="@+id/action_all_items"
+        android:title="@string/display_all"
+        app:showAsAction="ifRoom"/>
+    <item android:id="@+id/action_choose_category"
+        android:title="@string/choose_a_category"
+        app:showAsAction="ifRoom"/>
 </menu>
