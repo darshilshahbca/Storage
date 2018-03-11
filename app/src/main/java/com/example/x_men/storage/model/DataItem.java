@@ -1,21 +1,35 @@
 package com.example.x_men.storage.model;
 
+import android.arch.persistence.room.ColumnInfo;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.PrimaryKey;
 import android.content.ContentValues;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 import com.example.x_men.storage.database.ItemsTable;
 
 import java.util.UUID;
 
+@Entity
 public class DataItem implements Parcelable {
 
+//    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey
+    @NonNull
     private String itemId;
+    @ColumnInfo
     private String itemName;
+    @ColumnInfo
     private String description;
+    @ColumnInfo
     private String category;
+    @ColumnInfo
     private int sortPosition;
+    @ColumnInfo
     private double price;
+    @ColumnInfo
     private String image;
 
     public DataItem() {
