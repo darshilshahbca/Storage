@@ -20,14 +20,21 @@ import android.widget.Toast;
 
 import com.example.x_men.storage.database.AppDatabase;
 import com.example.x_men.storage.database.DataSource;
+import com.example.x_men.storage.events.DataItemsEvent;
 import com.example.x_men.storage.model.DataItem;
 import com.example.x_men.storage.sample.SampleDataProvider;
 import com.example.x_men.storage.util.JSONHelper;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -46,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
 //    DataItemAdapter mItemAdapter;
 
     private AppDatabase db;
+    private Executor executor = Executors.newSingleThreadExecutor ();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,67 +61,52 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         db = AppDatabase.getInstance (this);
-        int itemCount = db.dataItemDAO ().countItems ();
 
-        if(itemCount == 0){
-            List<DataItem> itemList = JSONHelper.importFromResource (this);
-            db.dataItemDAO ().insertAll (itemList);
-            Log.i(TAG, "onCreate: data inserted");
-        } else{
-            Log.i(TAG, "onCreate: data already exists");
-        }
-//
-//        Collections.sort (dataItemList, new Comparator<DataItem> () {
-//            @Override
-//            public int compare(DataItem o1, DataItem o2) {
-//                return o1.getItemName ().compareTo (o2.getItemName ());
-//            }
-//        });
+        executor.execute (new Runnable () {
+            @Override
+            public void run() {
+                int itemCount = db.dataItemDAO ().countItems ();
+                if(itemCount == 0){
+                    List<DataItem> itemList = JSONHelper.importFromResource (MainActivity.this);
+                    db.dataItemDAO ().insertAll (itemList);
+                    Log.i(TAG, "onCreate: data inserted");
+                } else{
+                    Log.i(TAG, "onCreate: data already exists");
+                }
+            }
+        });
 
 
+        executor.execute (new Runnable () {
+            @Override
+            public void run() {
+                dataItemList = db.dataItemDAO ().getAll ();
+                EventBus.getDefault ().post (new DataItemsEvent (dataItemList));
+            }
+        });
 
-//      Code to manage sliding navigation drawer
-//        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-//        mCategories = getResources().getStringArray(R.array.categories);
-//        mDrawerList = (ListView) findViewById(R.id.left_drawer);
-//        mDrawerList.setAdapter(new ArrayAdapter<>(this,
-//                R.layout.drawer_list_item, mCategories));
-//        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                String category = mCategories[position];
-//                Toast.makeText(MainActivity.this, "You chose " + category,
-//                        Toast.LENGTH_SHORT).show();
-//                mDrawerLayout.closeDrawer(mDrawerList);
-//                displayDataItems (category);
-//             }
-//        });
-//      end of navigation drawer
+        EventBus.getDefault ().register (this);
 
-//        mDataSource = new DataSource(this);
-//        mDataSource.open();
-//        mDataSource.seedDatabase(dataItemList);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void dataItemsEventHandler(DataItemsEvent event) {
+
+        dataItemList = event.getItemList ();
 
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
         boolean grid = settings.getBoolean(getString(R.string.pref_display_grid), false);
 
-        dataItemList = db.dataItemDAO ().getAll ();
         DataItemAdapter adapter = new DataItemAdapter (this, dataItemList);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.rvItems);
         if (grid) {
-            mRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
+            mRecyclerView.setLayoutManager(new GridLayoutManager (this, 3));
         }
 
-//        displayDataItems(null);
         mRecyclerView.setAdapter (adapter);
     }
 
-//    private void displayDataItems(String category) {
-//        listFromDB = mDataSource.getAllItems(category);
-//        mItemAdapter = new DataItemAdapter(this, listFromDB);
-//        mRecyclerView.setAdapter(mItemAdapter);
-//    }
 
     @Override
     protected void onPause() {
@@ -129,7 +122,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        AppDatabase.destoryInstance ();
+        AppDatabase.destroyInstance ();
+        EventBus.getDefault ().unregister (this);
         super.onDestroy ();
     }
 
