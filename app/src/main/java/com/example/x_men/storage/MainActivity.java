@@ -4,10 +4,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.ContactsContract;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,6 +22,7 @@ import com.example.x_men.storage.database.AppDatabase;
 import com.example.x_men.storage.database.DataSource;
 import com.example.x_men.storage.model.DataItem;
 import com.example.x_men.storage.sample.SampleDataProvider;
+import com.example.x_men.storage.util.JSONHelper;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -49,6 +52,15 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         db = AppDatabase.getInstance (this);
+        int itemCount = db.dataItemDAO ().countItems ();
+
+        if(itemCount == 0){
+            List<DataItem> itemList = JSONHelper.importFromResource (this);
+            db.dataItemDAO ().insertAll (itemList);
+            Log.i(TAG, "onCreate: data inserted");
+        } else{
+            Log.i(TAG, "onCreate: data already exists");
+        }
 
         Collections.sort (dataItemList, new Comparator<DataItem> () {
             @Override
