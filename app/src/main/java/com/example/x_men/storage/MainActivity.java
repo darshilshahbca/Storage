@@ -34,7 +34,8 @@ public class MainActivity extends AppCompatActivity {
     private static final int SIGNIN_REQUEST = 1001;
     public static final String MY_GLOBAL_PREFS = "my_global_prefs";
     private static final String TAG = "MainActivity";
-    List<DataItem> dataItemList = SampleDataProvider.dataItemList;
+    List<DataItem> dataItemList;
+//            = SampleDataProvider.dataItemList;
 //
 //    DataSource mDataSource;
 //    List<DataItem> listFromDB;
@@ -61,15 +62,15 @@ public class MainActivity extends AppCompatActivity {
         } else{
             Log.i(TAG, "onCreate: data already exists");
         }
+//
+//        Collections.sort (dataItemList, new Comparator<DataItem> () {
+//            @Override
+//            public int compare(DataItem o1, DataItem o2) {
+//                return o1.getItemName ().compareTo (o2.getItemName ());
+//            }
+//        });
 
-        Collections.sort (dataItemList, new Comparator<DataItem> () {
-            @Override
-            public int compare(DataItem o1, DataItem o2) {
-                return o1.getItemName ().compareTo (o2.getItemName ());
-            }
-        });
 
-        DataItemAdapter adapter = new DataItemAdapter (this, dataItemList);
 
 //      Code to manage sliding navigation drawer
 //        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -95,6 +96,9 @@ public class MainActivity extends AppCompatActivity {
 
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
         boolean grid = settings.getBoolean(getString(R.string.pref_display_grid), false);
+
+        dataItemList = db.dataItemDAO ().getAll ();
+        DataItemAdapter adapter = new DataItemAdapter (this, dataItemList);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.rvItems);
         if (grid) {

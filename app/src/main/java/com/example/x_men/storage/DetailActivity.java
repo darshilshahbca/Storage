@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.x_men.storage.database.AppDatabase;
 import com.example.x_men.storage.model.DataItem;
 
 import java.io.IOException;
@@ -19,15 +20,23 @@ public class DetailActivity extends AppCompatActivity {
     private TextView tvName, tvDescription, tvPrice;
     private ImageView itemImage;
 
+    private AppDatabase db;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        DataItem item = getIntent().getExtras().getParcelable(DataItemAdapter.ITEM_KEY);
-        if (item == null) {
-            throw new AssertionError("Null data item received!");
-        }
+        db = AppDatabase.getInstance (this);
+
+
+        String itemId = getIntent ().getStringExtra (DataItemAdapter.ITEM_ID_KEY);
+        DataItem item = db.dataItemDAO ().findById (itemId);
+
+//        DataItem item = getIntent().getExtras().getParcelable(DataItemAdapter.ITEM_KEY);
+//        if (item == null) {
+//            throw new AssertionError("Null data item received!");
+//        }
 
         tvName = (TextView) findViewById(R.id.tvItemName);
         tvPrice = (TextView) findViewById(R.id.tvPrice);
@@ -57,5 +66,11 @@ public class DetailActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        AppDatabase.destoryInstance ();
+        super.onDestroy ();
     }
 }
