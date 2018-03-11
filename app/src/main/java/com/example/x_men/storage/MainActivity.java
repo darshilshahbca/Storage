@@ -27,8 +27,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int SIGNIN_REQUEST = 1001;
     public static final String MY_GLOBAL_PREFS = "my_global_prefs";
     private static final String TAG = "MainActivity";
-    List<DataItem> dataItemList;
-//            = SampleDataProvider.dataItemList;
+    List<DataItem> dataItemList = SampleDataProvider.dataItemList;
 
     DataSource mDataSource;
     List<DataItem> listFromDB;

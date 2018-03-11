@@ -7,6 +7,7 @@ import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.example.x_men.storage.database.DBHelper;
@@ -27,57 +28,67 @@ public class DataSource {
         mDatabase = mDbHelper.getWritableDatabase ();
     }
 
-    public void open(){
+    public void open() {
         mDatabase = mDbHelper.getWritableDatabase ();
     }
 
-    public void close(){
+    public void close() {
         mDbHelper.close ();
     }
 
-    public DataItem createItem(DataItem item){
+    public DataItem createItem(DataItem item) {
         ContentValues values = item.toValues ();
         mDatabase.insert (ItemsTable.TABLE_ITEMS, null, values);
         return item;
     }
 
-    public long getDataItemsCount(){
+    public long getDataItemsCount() {
         return DatabaseUtils.queryNumEntries (mDatabase, ItemsTable.TABLE_ITEMS);
     }
 
-    public void seedDatabase(List<DataItem> dataItemList){
+    public void seedDatabase(List<DataItem> dataItemList) {
 
-        long numItems = getDataItemsCount ();
-        if (numItems == 0) {
+        try {
+            mDatabase.beginTransaction ();
             for (DataItem item : dataItemList) {
                 try {
+                    if (item.getItemName ().equals ("House Salad")) {
+                        throw new Exception ("I don't like salad!");
+                    }
                     createItem (item);
                 } catch (SQLiteException e) {
                     e.printStackTrace ();
                 }
+
             }
+            mDatabase.setTransactionSuccessful ();
+            mDatabase.endTransaction ();
+        } catch (Exception e) {
+            e.printStackTrace ();
+            Log.i("DataSource", "seedDatabase: " + e.getMessage ());
+            mDatabase.endTransaction ();
         }
 
     }
 
-    public List<DataItem> getAllItems(String category){
+    public List<DataItem> getAllItems(String category) {
 
         Cursor cursor = null;
 
         if (category == null) {
             cursor = mDatabase.query (ItemsTable.TABLE_ITEMS, ItemsTable.ALL_COLUMNS,
-                    null,null,null,null,ItemsTable.COLUMN_NAME,null);
+                    null, null, null, null, ItemsTable.COLUMN_NAME, null);
         } else {
 
             String[] categories = {category};
 
             cursor = mDatabase.query (ItemsTable.TABLE_ITEMS, ItemsTable.ALL_COLUMNS,
-                    ItemsTable.COLUMN_CATEGORY + "=?",categories,null,null,ItemsTable.COLUMN_NAME,null);
+                    ItemsTable.COLUMN_CATEGORY + "=?", categories, null, null, ItemsTable.COLUMN_NAME, null);
         }
 
         List<DataItem> dataItems = new ArrayList<> ();
 
-        while(cursor.moveToNext ()){
+        while (cursor.moveToNext ()) {
             DataItem item = new DataItem ();
             item.setItemId (cursor.getString (cursor.getColumnIndex (ItemsTable.COLUMN_ID)));
             item.setItemName (cursor.getString (cursor.getColumnIndex (ItemsTable.COLUMN_NAME)));
@@ -87,15 +98,14 @@ public class DataSource {
             item.setPrice (cursor.getDouble (cursor.getColumnIndex (ItemsTable.COLUMN_PRICE)));
             item.setImage (cursor.getString (cursor.getColumnIndex (ItemsTable.COLUMN_IMAGE)));
 
-            dataItems.add(item);
+            dataItems.add (item);
 
         }
 
-        cursor.close();
+        cursor.close ();
 
         return dataItems;
     }
-
 
 
 }
