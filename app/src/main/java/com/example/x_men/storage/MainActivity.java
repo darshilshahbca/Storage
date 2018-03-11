@@ -16,10 +16,14 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.x_men.storage.database.AppDatabase;
 import com.example.x_men.storage.database.DataSource;
 import com.example.x_men.storage.model.DataItem;
 import com.example.x_men.storage.sample.SampleDataProvider;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -28,42 +32,54 @@ public class MainActivity extends AppCompatActivity {
     public static final String MY_GLOBAL_PREFS = "my_global_prefs";
     private static final String TAG = "MainActivity";
     List<DataItem> dataItemList = SampleDataProvider.dataItemList;
-
-    DataSource mDataSource;
-    List<DataItem> listFromDB;
-    DrawerLayout mDrawerLayout;
-    ListView mDrawerList;
-    String[] mCategories;
+//
+//    DataSource mDataSource;
+//    List<DataItem> listFromDB;
+//    DrawerLayout mDrawerLayout;
+//    ListView mDrawerList;
+//    String[] mCategories;
     RecyclerView mRecyclerView;
-    DataItemAdapter mItemAdapter;
+//    DataItemAdapter mItemAdapter;
+
+    private AppDatabase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        db = AppDatabase.getInstance (this);
+
+        Collections.sort (dataItemList, new Comparator<DataItem> () {
+            @Override
+            public int compare(DataItem o1, DataItem o2) {
+                return o1.getItemName ().compareTo (o2.getItemName ());
+            }
+        });
+
+        DataItemAdapter adapter = new DataItemAdapter (this, dataItemList);
 
 //      Code to manage sliding navigation drawer
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mCategories = getResources().getStringArray(R.array.categories);
-        mDrawerList = (ListView) findViewById(R.id.left_drawer);
-        mDrawerList.setAdapter(new ArrayAdapter<>(this,
-                R.layout.drawer_list_item, mCategories));
-        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String category = mCategories[position];
-                Toast.makeText(MainActivity.this, "You chose " + category,
-                        Toast.LENGTH_SHORT).show();
-                mDrawerLayout.closeDrawer(mDrawerList);
-                displayDataItems (category);
-             }
-        });
+//        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+//        mCategories = getResources().getStringArray(R.array.categories);
+//        mDrawerList = (ListView) findViewById(R.id.left_drawer);
+//        mDrawerList.setAdapter(new ArrayAdapter<>(this,
+//                R.layout.drawer_list_item, mCategories));
+//        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                String category = mCategories[position];
+//                Toast.makeText(MainActivity.this, "You chose " + category,
+//                        Toast.LENGTH_SHORT).show();
+//                mDrawerLayout.closeDrawer(mDrawerList);
+//                displayDataItems (category);
+//             }
+//        });
 //      end of navigation drawer
 
-        mDataSource = new DataSource(this);
-        mDataSource.open();
-        mDataSource.seedDatabase(dataItemList);
+//        mDataSource = new DataSource(this);
+//        mDataSource.open();
+//        mDataSource.seedDatabase(dataItemList);
 
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
         boolean grid = settings.getBoolean(getString(R.string.pref_display_grid), false);
@@ -73,26 +89,34 @@ public class MainActivity extends AppCompatActivity {
             mRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
         }
 
-        displayDataItems(null);
+//        displayDataItems(null);
+        mRecyclerView.setAdapter (adapter);
     }
 
-    private void displayDataItems(String category) {
-        listFromDB = mDataSource.getAllItems(category);
-        mItemAdapter = new DataItemAdapter(this, listFromDB);
-        mRecyclerView.setAdapter(mItemAdapter);
-    }
+//    private void displayDataItems(String category) {
+//        listFromDB = mDataSource.getAllItems(category);
+//        mItemAdapter = new DataItemAdapter(this, listFromDB);
+//        mRecyclerView.setAdapter(mItemAdapter);
+//    }
 
     @Override
     protected void onPause() {
         super.onPause();
-        mDataSource.close();
+//        mDataSource.close();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        mDataSource.open();
+//        mDataSource.open();
     }
+
+    @Override
+    protected void onDestroy() {
+        AppDatabase.destoryInstance ();
+        super.onDestroy ();
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -114,11 +138,11 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             case R.id.action_all_items:
                 // display all items
-                displayDataItems(null);
+//                displayDataItems(null);
                 return true;
             case R.id.action_choose_category:
                 //open the drawer
-                mDrawerLayout.openDrawer(mDrawerList);
+//                mDrawerLayout.openDrawer(mDrawerList);
                 return true;
         }
         return super.onOptionsItemSelected(item);

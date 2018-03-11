@@ -2,6 +2,7 @@ package com.example.x_men.storage.model;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.content.ContentValues;
 import android.os.Parcel;
@@ -35,6 +36,7 @@ public class DataItem implements Parcelable {
     public DataItem() {
     }
 
+    @Ignore
     public DataItem(String itemId, String itemName, String category, String description, int sortPosition, double price, String image) {
 
         if(itemId == null) {
