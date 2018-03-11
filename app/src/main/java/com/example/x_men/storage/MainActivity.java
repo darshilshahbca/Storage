@@ -30,7 +30,8 @@ public class MainActivity extends AppCompatActivity {
     private static final int SIGNIN_REQUEST = 1001;
     public static final String MY_GLOBAL_PREFS = "my_global_prefs";
     private static final String TAG = "MainActivity";
-    List<DataItem> dataItemList = SampleDataProvider.dataItemList;
+    List<DataItem> dataItemList;
+//            = SampleDataProvider.dataItemList;
 
     DataSource mDataSource;
 
@@ -41,30 +42,19 @@ public class MainActivity extends AppCompatActivity {
 
          mDataSource = new DataSource (this);
          mDataSource.open();
-         Toast.makeText (this, "Database Acquired!", Toast.LENGTH_SHORT).show();
+         mDataSource.seedDatabase (dataItemList);
 
-         long numItems = mDataSource.getDataItemsCount ();
-        if (numItems == 0) {
-            for (DataItem item : dataItemList) {
-                try {
-                    mDataSource.createItem (item);
-                } catch (SQLiteException e) {
-                    e.printStackTrace ();
-                }
-            }
-            Toast.makeText (this, "Data inserted!", Toast.LENGTH_SHORT).show();
-        } else{
-            Toast.makeText (this, "Data already inserted!", Toast.LENGTH_SHORT).show();
-        }
 
-        Collections.sort(dataItemList, new Comparator<DataItem>() {
-            @Override
-            public int compare(DataItem o1, DataItem o2) {
-                return o1.getItemName().compareTo(o2.getItemName());
-            }
-        });
+//        Collections.sort(dataItemList, new Comparator<DataItem>() {
+//            @Override
+//            public int compare(DataItem o1, DataItem o2) {
+//                return o1.getItemName().compareTo(o2.getItemName());
+//            }
+//        });
 
-        DataItemAdapter adapter = new DataItemAdapter(this, dataItemList);
+        List<DataItem> listFromDB  = mDataSource.getAllItems ();
+
+        DataItemAdapter adapter = new DataItemAdapter(this, listFromDB);
 
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences (this);
         boolean grid = settings.getBoolean (getString (R.string.pref_display_grid), false);
