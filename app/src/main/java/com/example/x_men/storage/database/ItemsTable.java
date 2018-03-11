@@ -1,7 +1,7 @@
 package com.example.x_men.storage.database;
 
 
-public class ItemTables {
+public class ItemsTable {
     public static final String TABLE_ITEMS = "items";
     public static final String COLUMN_ID = "itemId";
     public static final String COLUMN_NAME = "itemName";

@@ -3,6 +3,7 @@ package com.example.x_men.storage;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -41,6 +42,20 @@ public class MainActivity extends AppCompatActivity {
          mDataSource = new DataSource (this);
          mDataSource.open();
          Toast.makeText (this, "Database Acquired!", Toast.LENGTH_SHORT).show();
+
+         long numItems = mDataSource.getDataItemsCount ();
+        if (numItems == 0) {
+            for (DataItem item : dataItemList) {
+                try {
+                    mDataSource.createItem (item);
+                } catch (SQLiteException e) {
+                    e.printStackTrace ();
+                }
+            }
+            Toast.makeText (this, "Data inserted!", Toast.LENGTH_SHORT).show();
+        } else{
+            Toast.makeText (this, "Data already inserted!", Toast.LENGTH_SHORT).show();
+        }
 
         Collections.sort(dataItemList, new Comparator<DataItem>() {
             @Override

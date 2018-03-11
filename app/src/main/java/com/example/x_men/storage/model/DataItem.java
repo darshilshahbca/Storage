@@ -1,7 +1,10 @@
 package com.example.x_men.storage.model;
 
+import android.content.ContentValues;
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import com.example.x_men.storage.database.ItemsTable;
 
 import java.util.UUID;
 
@@ -89,7 +92,19 @@ public class DataItem implements Parcelable {
         this.image = image;
     }
 
+    public ContentValues toValues(){
+        ContentValues values = new ContentValues (7);
 
+        values.put (ItemsTable.COLUMN_ID, itemId);
+        values.put (ItemsTable.COLUMN_NAME, itemName);
+        values.put (ItemsTable.COLUMN_DESCRIPTION, description);
+        values.put (ItemsTable.COLUMN_CATEGORY, category);
+        values.put (ItemsTable.COLUMN_POSITION, sortPosition);
+        values.put (ItemsTable.COLUMN_PRICE, price);
+        values.put (ItemsTable.COLUMN_IMAGE, image);
+
+        return values;
+    }
 
     @Override
     public String toString() {
@@ -141,4 +156,6 @@ public class DataItem implements Parcelable {
             return new DataItem[size];
         }
     };
+
+
 }
