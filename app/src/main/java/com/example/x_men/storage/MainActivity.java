@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.example.x_men.storage.database.DBHelper;
+import com.example.x_men.storage.database.DataSource;
 import com.example.x_men.storage.model.DataItem;
 import com.example.x_men.storage.sample.SampleDataProvider;
 import com.example.x_men.storage.util.JSONHelper;
@@ -30,16 +31,16 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     List<DataItem> dataItemList = SampleDataProvider.dataItemList;
 
-    SQLiteDatabase database;
+    DataSource mDataSource;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
          setContentView(R.layout.activity_main);
 
-        SQLiteOpenHelper dbHelper = new DBHelper (this);
-        database = dbHelper.getWritableDatabase ();
-        Toast.makeText (this, "Database Acquired!", Toast.LENGTH_SHORT).show();
+         mDataSource = new DataSource (this);
+         mDataSource.open();
+         Toast.makeText (this, "Database Acquired!", Toast.LENGTH_SHORT).show();
 
         Collections.sort(dataItemList, new Comparator<DataItem>() {
             @Override
@@ -60,6 +61,18 @@ public class MainActivity extends AppCompatActivity {
         }
 
         recyclerView.setAdapter(adapter);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause ();
+        mDataSource.close();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume ();
+        mDataSource.open();
     }
 
     @Override
